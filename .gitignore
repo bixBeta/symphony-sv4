@@ -3,4 +3,6 @@
 core*
 .RDS
 .rds
+.Rds
 data/
+cache*
