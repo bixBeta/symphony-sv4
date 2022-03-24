@@ -25,3 +25,22 @@ saveRDS(sobj.sct, "data/sobj.sct.Rds")
 ref <- buildReferenceFromSeurat(sobj.sct, assay = 'SCT', 
                                 verbose=TRUE, save_umap=TRUE, save_uwot_path='cache_symphony_sct.uwot')
 saveRDS(ref, "data/ref-sv4-res0.6.RDS")
+
+
+query <- mapQuery(
+  q@assays$SCT@scale.data, 
+  q@meta.data, 
+  ref.sv4.res0.6,
+  vars = 'orig.ident', 
+  do_normalize = FALSE,
+  return_type = 'Seurat' # return a Seurat object
+)
+
+options(repr.plot.height = 4, repr.plot.width = 10)
+(DimPlot(ref.sv4.res0.6, reduction = 'umap', shuffle = TRUE) + labs(title = 'Original Reference (Clusters)')) + 
+  (DimPlot(q, reduction = 'umap', shuffle = TRUE) + labs(title = 'Mapped Query (Donors)'))
+
+
+
+q <- knnPredict.Seurat(q, ref.sv4.res0.6, 'SCT_snn_res.0.6')
+DimPlot(q, reduction = 'umap', group.by = 'SCT_snn_res.0.6', shuffle = TRUE)
